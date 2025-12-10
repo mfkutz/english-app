@@ -116,11 +116,7 @@ export const lessonService = {
 
   // Enviar respuesta
   async submitAnswer(lessonId: string, data: SubmitAnswerRequest): Promise<SubmitAnswerResponse> {
-    console.log("Estamos en lesson.service.ts", data);
-
     const response = await api.post(`/lessons/${lessonId}/answer`, data);
-
-    console.log("RESPONSE in API", response.data.data);
     return response.data.data;
   },
 

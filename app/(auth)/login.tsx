@@ -2,16 +2,7 @@ import { useWizard } from "@/hooks/useWizard";
 import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../../components/common/Button";
 import { Input } from "../../components/common/Input";
@@ -67,53 +58,58 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
+        className="flex-1"
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
       >
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerClassName="flex-grow justify-center"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          className="px-6"
         >
-          {/* Header con X */}
-          <View style={styles.header}>
-            <View style={styles.headerSpacer} />
-            <TouchableOpacity onPress={() => router.replace("/welcome")} style={styles.closeButton}>
-              <MaterialCommunityIcons name="close" size={24} color="#666" />
+          {/* Header minimalista */}
+          <View className="flex-row justify-end mb-8">
+            <TouchableOpacity
+              onPress={() => router.replace("/welcome")}
+              className="w-10 h-10 rounded-full bg-gray-100 justify-center items-center"
+              activeOpacity={0.7}
+            >
+              <MaterialCommunityIcons name="close" size={20} color="#6B7280" />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.form}>
-            {/* Logo o mensaje de bienvenida */}
-            <View style={styles.welcomeContainer}>
-              <Text style={styles.welcomeTitle}>Sign In</Text>
-              <Text style={styles.welcomeSubtitle}>Continue your learning</Text>
+          {/* Contenido principal */}
+          <View>
+            {/* Título */}
+            <View className="mb-10">
+              <Text className="text-3xl font-bold text-gray-900 text-center mb-2">Welcome Back</Text>
+              <Text className="text-base text-gray-600 text-center">Sign in to continue your learning journey</Text>
             </View>
 
-            {/* Google Button moderno */}
-            <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin}>
-              <View style={styles.socialButtonContent}>
-                <FontAwesome5
-                  name="google"
-                  size={24}
-                  // Sin color prop - muestra colores automáticos
-                />
-                <Text style={styles.socialButtonText}>Continue with Google</Text>
+            {/* Google Button - Minimalista */}
+            <TouchableOpacity
+              className="border border-gray-300 rounded-xl p-4 mb-6 active:bg-gray-50"
+              onPress={handleGoogleLogin}
+              activeOpacity={0.8}
+            >
+              <View className="flex-row items-center justify-center">
+                <FontAwesome5 name="google" size={20} />
+                <Text className="text-gray-900 font-medium text-base ml-3">Continue with Google</Text>
               </View>
             </TouchableOpacity>
 
-            {/* Divider más elegante */}
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or with email</Text>
-              <View style={styles.dividerLine} />
+            {/* Divider */}
+            <View className="flex-row items-center my-6">
+              <View className="flex-1 h-px bg-gray-300" />
+              <Text className="mx-4 text-gray-500 text-sm">or continue with email</Text>
+              <View className="flex-1 h-px bg-gray-300" />
             </View>
 
             {/* Formulario */}
-            <View style={styles.inputsContainer}>
+            <View className="space-y-4">
               <Input
                 label="Email"
                 placeholder="your.email@example.com"
@@ -123,7 +119,7 @@ export default function LoginScreen() {
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoComplete="email"
-                containerStyle={styles.input}
+                inputClassName="bg-gray-50"
               />
 
               <Input
@@ -134,16 +130,17 @@ export default function LoginScreen() {
                 error={errors.password}
                 secureTextEntry
                 autoComplete="password"
-                containerStyle={styles.input}
+                inputClassName="bg-gray-50"
               />
             </View>
 
             {/* Forgot Password */}
             <TouchableOpacity
-              style={styles.forgotPassword}
+              className="self-end mt-4 mb-8"
               onPress={() => Alert.alert("Coming Soon", "Password reset feature coming soon!")}
+              activeOpacity={0.7}
             >
-              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+              <Text className="text-blue-600 font-medium text-sm">Forgot password?</Text>
             </TouchableOpacity>
 
             {/* Login Button */}
@@ -153,14 +150,14 @@ export default function LoginScreen() {
               loading={isLoading}
               disabled={isLoading}
               size="large"
-              style={styles.loginButton}
+              className="w-full rounded-xl"
             />
 
             {/* Sign Up Link */}
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => router.push("/signup-options")}>
-                <Text style={styles.footerLink}>Sign Up</Text>
+            <View className="flex-row justify-center mt-8 pt-6 border-t border-gray-200">
+              <Text className="text-gray-600">Don't have an account? </Text>
+              <TouchableOpacity onPress={() => router.push("/signup-options")} activeOpacity={0.7}>
+                <Text className="text-blue-600 font-semibold">Sign Up</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -169,137 +166,3 @@ export default function LoginScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    minHeight: "100%", // Para centrar verticalmente
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 16,
-    marginBottom: 40,
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#F5F5F5",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  headerSpacer: {
-    width: 40, // Para mantener simetría
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#1A1A1A",
-    textAlign: "center",
-    flex: 1, // Para centrar realmente
-  },
-  welcomeContainer: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  welcomeTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#1A1A1A",
-    marginBottom: 8,
-  },
-  welcomeSubtitle: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
-  form: {
-    width: "100%",
-  },
-  socialButton: {
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    borderRadius: 12,
-    paddingVertical: 16,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  socialButtonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  socialButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-    marginLeft: 12,
-  },
-  inputsContainer: {
-    gap: 16,
-    marginBottom: 8,
-  },
-  input: {
-    // Si tu componente Input acepta containerStyle
-  },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#E0E0E0",
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    color: "#999",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  forgotPassword: {
-    alignItems: "flex-end",
-    marginBottom: 24,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: "#007AFF",
-    fontWeight: "500",
-  },
-  loginButton: {
-    marginTop: 8,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 32,
-    marginBottom: 40,
-    paddingBottom: 20,
-  },
-  footerText: {
-    fontSize: 14,
-    color: "#666",
-  },
-  footerLink: {
-    fontSize: 14,
-    color: "#007AFF",
-    fontWeight: "600",
-  },
-});

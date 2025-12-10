@@ -1,16 +1,15 @@
-// # Paso 2: Nombre
 import { useWizardStore } from "@/store/useWizardStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import { Button } from "../../components/common/Button";
 import { Input } from "../../components/common/Input";
 
 export default function WizardNameScreen() {
   const router = useRouter();
   const { data, updateData } = useWizardStore();
-  const [name, setName] = useState(data.name);
+  const [name, setName] = useState(data.name || "");
   const [loading, setLoading] = useState(false);
 
   const handleNext = async () => {
@@ -31,139 +30,95 @@ export default function WizardNameScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Progress */}
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: "33%" }]} />
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView contentContainerClassName="flex-grow px-6 pt-10 pb-8" showsVerticalScrollIndicator={false}>
+        {/* Progress indicator */}
+        <View className="mb-10">
+          <View className="flex-row items-center justify-between mb-2">
+            <Text className="text-sm font-medium text-blue-600">Step 2 of 6</Text>
+            <Text className="text-sm text-gray-500">Personal Info</Text>
           </View>
-          <Text style={styles.progressText}>Step 2 of 6</Text>
+          <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <View className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full" style={{ width: "33%" }} />
+          </View>
         </View>
 
-        {/* Title */}
-        <View style={styles.header}>
-          <Text style={styles.title}>What's your name?</Text>
-          <Text style={styles.subtitle}>We'll use this to personalize your experience</Text>
+        {/* Header with illustration */}
+        <View className="items-center mb-10">
+          <View className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl justify-center items-center mb-6 shadow-lg shadow-purple-500/20">
+            <MaterialCommunityIcons name="account" size={36} color="white" />
+          </View>
+
+          <Text className="text-3xl font-bold text-gray-900 text-center mb-3">What's your name?</Text>
+
+          <Text className="text-base text-gray-600 text-center max-w-xs">
+            We'll use this to personalize your learning experience
+          </Text>
         </View>
 
-        {/* Input */}
-        <View style={styles.form}>
+        {/* Form section */}
+        <View className="flex-1 mb-8">
           <Input
             label="Your Name"
-            placeholder="Enter your name"
+            placeholder="Enter your first name"
             value={name}
             onChangeText={setName}
             autoCapitalize="words"
             autoComplete="name"
             maxLength={50}
+            inputClassName="text-lg"
+            className="mb-2"
           />
 
-          <Text style={styles.hint}>This is how we'll address you in the app</Text>
+          <Text className="text-sm text-gray-500 text-center mt-4">
+            This is how we'll address you throughout the app
+          </Text>
         </View>
 
-        {/* Buttons */}
-        <View style={styles.buttonsContainer}>
+        {/* Action button */}
+        <View className="mb-8">
           <Button
-            title="Next"
+            title="Continue"
             onPress={handleNext}
             variant="primary"
             size="large"
             loading={loading}
             disabled={loading || !name.trim()}
-            style={styles.nextButton}
+            className="w-full rounded-2xl shadow-lg"
+            icon="arrow-right"
+            iconPosition="right"
           />
         </View>
 
-        {/* Navigation hint */}
-        <View style={styles.navigationHint}>
-          <MaterialCommunityIcons name="arrow-left" size={16} color="#666" />
-          <Text style={styles.navigationText} onPress={() => router.back()}>
-            Back to language selection
-          </Text>
+        {/* Back navigation */}
+        <View className="items-center mt-6">
+          <Button
+            title="Back to Language"
+            onPress={() => router.back()}
+            variant="outline"
+            size="small"
+            icon="arrow-left"
+            className="rounded-xl border-gray-300"
+            textClassName="text-gray-600"
+          />
+        </View>
+
+        {/* Tips section */}
+        <View className="mt-10 pt-6 border-t border-gray-200">
+          <View className="flex-row items-start mb-4">
+            <View className="w-8 h-8 bg-blue-100 rounded-full justify-center items-center mr-3 mt-0.5">
+              <MaterialCommunityIcons name="lightbulb-outline" size={16} color="#3B82F6" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-medium text-gray-800 mb-1">Why we ask for your name</Text>
+              <Text className="text-xs text-gray-600">
+                Personalizing lessons with your name helps create a more engaging learning environment and improves
+                retention.
+              </Text>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 40,
-    paddingBottom: 32,
-  },
-  progressContainer: {
-    marginBottom: 40,
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: "#E5E5EA",
-    borderRadius: 2,
-    overflow: "hidden",
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#007AFF",
-    borderRadius: 2,
-  },
-  progressText: {
-    fontSize: 12,
-    color: "#8E8E93",
-    textAlign: "center",
-  },
-  header: {
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#1A1A1A",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    lineHeight: 22,
-  },
-  form: {
-    flex: 1,
-    marginBottom: 32,
-  },
-  hint: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 8,
-    textAlign: "center",
-  },
-  buttonsContainer: {
-    marginTop: 32,
-    marginBottom: 16,
-  },
-  nextButton: {
-    marginBottom: 12,
-  },
-  skipButton: {
-    alignSelf: "center",
-  },
-  navigationHint: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 24,
-  },
-  navigationText: {
-    fontSize: 14,
-    color: "#666",
-    marginLeft: 8,
-    textDecorationLine: "underline",
-  },
-});

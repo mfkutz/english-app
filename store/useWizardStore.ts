@@ -28,8 +28,6 @@ const initialData: WizardData = {
   reminderTime: "20:00",
 };
 
-console.log("ACTUAL DATA", initialData);
-
 //preparamos todo para enviar al backend
 export const useWizardStore = create<WizardStore>((set) => ({
   data: initialData,

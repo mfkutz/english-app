@@ -2,16 +2,7 @@ import { useWizard } from "@/hooks/useWizard";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../../components/common/Button";
 import { Input } from "../../components/common/Input";
@@ -62,65 +53,92 @@ export default function RegisterScreen() {
         router.replace("/(tabs)");
       }
     } catch (error: any) {
-      Alert.alert("Login Failed", error.message || "An error occurred");
+      Alert.alert("Registration Failed", error.message || "An error occurred");
     }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          {/* Header con X */}
-          <View style={styles.header}>
-            <View style={styles.headerSpacer} />
-            <TouchableOpacity onPress={() => router.replace("/welcome")} style={styles.closeButton}>
-              <MaterialCommunityIcons name="close" size={24} color="#666" />
-            </TouchableOpacity>
-          </View>
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      >
+        {/* Header con ícono de cerrar en esquina superior derecha */}
+        <View className="absolute top-4 right-4 z-10">
+          <TouchableOpacity
+            onPress={() => router.replace("/welcome")}
+            className="w-10 h-10 rounded-full bg-gray-100 justify-center items-center"
+            activeOpacity={0.7}
+          >
+            <MaterialCommunityIcons name="close" size={20} color="#6B7280" />
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.form}>
-            <Input
-              label="Email"
-              placeholder="your.email@example.com"
-              value={email}
-              onChangeText={setEmail}
-              error={errors.email}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoComplete="email"
-            />
+        <ScrollView
+          contentContainerClassName="flex-grow justify-center"
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          className="px-6"
+        >
+          {/* Contenido centrado */}
+          <View className="max-w-md w-full mx-auto">
+            {/* Título */}
+            <View className="mb-8">
+              <Text className="text-3xl font-bold text-gray-900 text-center mb-2">Create Account</Text>
+              <Text className="text-base text-gray-600 text-center">Start your English learning journey</Text>
+            </View>
 
-            <Input
-              label="Password"
-              placeholder="At least 6 characters"
-              value={password}
-              onChangeText={setPassword}
-              error={errors.password}
-              secureTextEntry
-              autoComplete="password-new"
-            />
+            {/* Formulario */}
+            <View className="space-y-6">
+              <Input
+                label="Email"
+                placeholder="your.email@example.com"
+                value={email}
+                onChangeText={setEmail}
+                error={errors.email}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoComplete="email"
+                inputClassName="bg-gray-50"
+              />
 
-            <Text style={styles.passwordHint}>Your password must be at least 6 characters long.</Text>
+              <Input
+                label="Password"
+                placeholder="At least 6 characters"
+                value={password}
+                onChangeText={setPassword}
+                error={errors.password}
+                secureTextEntry
+                autoComplete="password-new"
+                inputClassName="bg-gray-50"
+              />
 
-            <Button
-              title="Create Account"
-              onPress={handleRegister}
-              loading={isLoading}
-              disabled={isLoading}
-              size="large"
-              style={styles.registerButton}
-            />
+              <Text className="text-sm text-gray-500 mt-2">Your password must be at least 6 characters long.</Text>
 
-            <Text style={styles.termsText}>
-              By creating an account, you agree to our <Text style={styles.link}>Terms of Service</Text> and{" "}
-              <Text style={styles.link}>Privacy Policy</Text>
-            </Text>
+              {/* Botón de registro */}
+              <Button
+                title="Create Account"
+                onPress={handleRegister}
+                loading={isLoading}
+                disabled={isLoading}
+                size="large"
+                className="w-full rounded-xl mt-4"
+              />
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Already have an account? </Text>
-              <Text style={styles.footerLink} onPress={() => router.push("/(auth)/login")}>
-                Sign In
+              {/* Términos y condiciones */}
+              <Text className="text-xs text-gray-500 text-center mt-6 leading-5">
+                By creating an account, you agree to our <Text className="text-blue-600">Terms of Service</Text> and{" "}
+                <Text className="text-blue-600">Privacy Policy</Text>
               </Text>
+
+              {/* Link a login */}
+              <View className="flex-row justify-center mt-8 pt-6 border-t border-gray-200">
+                <Text className="text-gray-600">Already have an account? </Text>
+                <TouchableOpacity onPress={() => router.push("/(auth)/login")} activeOpacity={0.7}>
+                  <Text className="text-blue-600 font-semibold">Sign In</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -128,79 +146,3 @@ export default function RegisterScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 24,
-    marginBottom: 40,
-  },
-  headerSpacer: {
-    width: 40, // Para mantener simetría
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#F5F5F5",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  backButton: {
-    marginRight: 16,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#1A1A1A",
-  },
-  form: {
-    flex: 1,
-  },
-  passwordHint: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: -8,
-    marginBottom: 24,
-  },
-  registerButton: {
-    marginTop: 8,
-  },
-  termsText: {
-    fontSize: 12,
-    color: "#666",
-    textAlign: "center",
-    lineHeight: 16,
-    marginTop: 24,
-  },
-  link: {
-    color: "#007AFF",
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 32,
-    marginBottom: 40,
-  },
-  footerText: {
-    fontSize: 14,
-    color: "#666",
-  },
-  footerLink: {
-    fontSize: 14,
-    color: "#007AFF",
-    fontWeight: "600",
-  },
-});

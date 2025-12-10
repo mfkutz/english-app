@@ -1,21 +1,19 @@
-// # Paso 6: Notificaciones
 import { useWizardStore } from "@/store/useWizardStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "../../components/common/Button";
 import { useWizard } from "../../hooks/useWizard";
 
 export default function WizardNotificationsScreen() {
   const router = useRouter();
   const { data } = useWizardStore();
-
   const { completeWizard, isLoading } = useWizard();
 
-  const [wantsNotifications, setWantsNotifications] = useState(data.wantsNotifications);
-  const [wantsDailyReminder, setWantsDailyReminder] = useState(data.wantsDailyReminder);
-  const [reminderTime, setReminderTime] = useState(data.reminderTime);
+  const [wantsNotifications, setWantsNotifications] = useState(data.wantsNotifications || true);
+  const [wantsDailyReminder, setWantsDailyReminder] = useState(data.wantsDailyReminder || true);
+  const [reminderTime, setReminderTime] = useState(data.reminderTime || "20:00");
 
   const handleComplete = async () => {
     try {
@@ -27,8 +25,6 @@ export default function WizardNotificationsScreen() {
       };
 
       await completeWizard(finalData);
-
-      // Navegar a tabs
       router.replace("/(tabs)");
     } catch (error) {
       console.error("Error completing wizard:", error);
@@ -39,347 +35,233 @@ export default function WizardNotificationsScreen() {
   const times = ["08:00", "12:00", "17:00", "20:00", "22:00"];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Progress - COMPLETADO */}
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: "100%" }]} />
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView contentContainerClassName="flex-grow px-6 pt-10 pb-8" showsVerticalScrollIndicator={false}>
+        {/* Progress - 100% Complete */}
+        <View className="mb-10">
+          <View className="flex-row items-center justify-between mb-2">
+            <Text className="text-sm font-medium text-green-600">Step 6 of 6 • Complete!</Text>
+            <Text className="text-sm text-gray-500">Notifications</Text>
           </View>
-          <Text style={styles.progressText}>Step 6 of 6</Text>
+          <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <View
+              className="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full"
+              style={{ width: "100%" }}
+            />
+          </View>
         </View>
 
-        {/* Title */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Almost done! 🎉</Text>
-          <Text style={styles.subtitle}>Set up notifications to stay on track</Text>
+        {/* Header with celebration */}
+        <View className="items-center mb-10">
+          <View className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl justify-center items-center mb-6 shadow-lg shadow-green-500/20">
+            <MaterialCommunityIcons name="party-popper" size={36} color="white" />
+          </View>
+
+          <Text className="text-3xl font-bold text-gray-900 text-center mb-3">Almost there! 🎉</Text>
+
+          <Text className="text-base text-gray-600 text-center max-w-xs">Set up notifications to stay motivated</Text>
         </View>
 
-        {/* Main option */}
-        <View style={styles.mainOption}>
+        {/* Main Notification Toggle */}
+        <View className="mb-8">
           <TouchableOpacity
-            style={[styles.notificationToggle, wantsNotifications && styles.notificationToggleActive]}
+            className={`
+              rounded-2xl p-5 border-2
+              ${wantsNotifications ? "bg-blue-50 border-blue-500 shadow-sm" : "bg-gray-50 border-gray-300"}
+              active:opacity-80
+            `}
             onPress={() => setWantsNotifications(!wantsNotifications)}
+            activeOpacity={0.7}
           >
-            <View style={styles.toggleContent}>
-              <MaterialCommunityIcons name="bell" size={32} color={wantsNotifications ? "#007AFF" : "#8E8E93"} />
-              <View style={styles.toggleTexts}>
-                <Text style={styles.toggleTitle}>Enable Notifications</Text>
-                <Text style={styles.toggleDescription}>Get reminders and progress updates</Text>
+            <View className="flex-row items-center">
+              <View
+                className={`
+                w-12 h-12 rounded-xl justify-center items-center mr-4
+                ${wantsNotifications ? "bg-blue-100" : "bg-gray-200"}
+              `}
+              >
+                <MaterialCommunityIcons name="bell" size={24} color={wantsNotifications ? "#3B82F6" : "#9CA3AF"} />
               </View>
-              <View style={[styles.toggleSwitch, wantsNotifications && styles.toggleSwitchActive]}>
-                <View style={[styles.toggleKnob, wantsNotifications && styles.toggleKnobActive]} />
+
+              <View className="flex-1">
+                <Text className="text-lg font-semibold text-gray-900 mb-1">Enable Notifications</Text>
+                <Text className="text-sm text-gray-600">Get reminders, progress updates, and motivational tips</Text>
+              </View>
+
+              {/* Custom Toggle Switch */}
+              <View
+                className={`
+                w-14 h-8 rounded-full relative
+                ${wantsNotifications ? "bg-blue-500" : "bg-gray-300"}
+              `}
+              >
+                <View
+                  className={`
+                  absolute top-1 w-6 h-6 rounded-full bg-white
+                  ${wantsNotifications ? "right-1" : "left-1"}
+                  shadow-sm
+                `}
+                />
               </View>
             </View>
           </TouchableOpacity>
         </View>
 
-        {/* Daily reminder - Solo si notificaciones activas */}
+        {/* Daily Reminder - Conditionally shown */}
         {wantsNotifications && (
-          <View style={styles.dailyReminder}>
-            <Text style={styles.sectionTitle}>Daily Reminder</Text>
+          <View className="mb-8">
+            <Text className="text-lg font-semibold text-gray-900 mb-4">Daily Practice Reminder</Text>
+
             <TouchableOpacity
-              style={[styles.reminderToggle, wantsDailyReminder && styles.reminderToggleActive]}
+              className={`
+                rounded-xl p-4 border
+                ${wantsDailyReminder ? "bg-emerald-50 border-emerald-300" : "bg-gray-50 border-gray-200"}
+                active:opacity-80
+              `}
               onPress={() => setWantsDailyReminder(!wantsDailyReminder)}
+              activeOpacity={0.7}
             >
-              <MaterialCommunityIcons
-                name="calendar-clock"
-                size={24}
-                color={wantsDailyReminder ? "#007AFF" : "#8E8E93"}
-              />
-              <Text style={styles.reminderText}>Practice reminder</Text>
-              <View style={[styles.reminderSwitch, wantsDailyReminder && styles.reminderSwitchActive]}>
-                <View style={[styles.reminderKnob, wantsDailyReminder && styles.reminderKnobActive]} />
+              <View className="flex-row items-center">
+                <MaterialCommunityIcons
+                  name="calendar-clock"
+                  size={22}
+                  color={wantsDailyReminder ? "#10B981" : "#9CA3AF"}
+                  className="mr-3"
+                />
+
+                <View className="flex-1">
+                  <Text className="text-base font-medium text-gray-900">Daily practice reminder</Text>
+                  <Text className="text-sm text-gray-500 mt-1">Get notified to practice every day</Text>
+                </View>
+
+                {/* Smaller toggle */}
+                <View
+                  className={`
+                  w-12 h-6 rounded-full relative
+                  ${wantsDailyReminder ? "bg-emerald-500" : "bg-gray-300"}
+                `}
+                >
+                  <View
+                    className={`
+                    absolute top-0.5 w-5 h-5 rounded-full bg-white
+                    ${wantsDailyReminder ? "right-0.5" : "left-0.5"}
+                    shadow-sm
+                  `}
+                  />
+                </View>
               </View>
             </TouchableOpacity>
 
-            {/* Time selection */}
+            {/* Time Selection */}
             {wantsDailyReminder && (
-              <View style={styles.timeSelection}>
-                <Text style={styles.timeTitle}>Reminder time</Text>
-                <View style={styles.timeOptions}>
-                  {times.map((time) => (
-                    <TouchableOpacity
-                      key={time}
-                      style={[styles.timeOption, reminderTime === time && styles.timeOptionSelected]}
-                      onPress={() => setReminderTime(time)}
-                    >
-                      <Text style={[styles.timeOptionText, reminderTime === time && styles.timeOptionTextSelected]}>
-                        {time}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+              <View className="mt-6">
+                <Text className="text-base font-medium text-gray-900 mb-3">Preferred reminder time</Text>
+
+                <View className="flex-row flex-wrap gap-2">
+                  {times.map((time) => {
+                    const isSelected = reminderTime === time;
+                    return (
+                      <TouchableOpacity
+                        key={time}
+                        className={`
+                          px-4 py-2.5 rounded-lg border
+                          ${isSelected ? "bg-blue-500 border-blue-500" : "bg-gray-100 border-gray-300"}
+                          active:opacity-80
+                        `}
+                        onPress={() => setReminderTime(time)}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          className={`
+                          text-sm font-medium
+                          ${isSelected ? "text-white" : "text-gray-700"}
+                        `}
+                        >
+                          {time}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
+
+                <Text className="text-xs text-gray-500 mt-3">
+                  You'll receive a friendly reminder at this time each day
+                </Text>
               </View>
             )}
           </View>
         )}
 
-        {/* Features summary */}
-        <View style={styles.features}>
-          <Text style={styles.featuresTitle}>Your setup includes:</Text>
-          <View style={styles.featureItem}>
-            <MaterialCommunityIcons name="check-circle" size={20} color="#34C759" />
-            <Text style={styles.featureText}>Personalized lessons</Text>
-          </View>
-          <View style={styles.featureItem}>
-            <MaterialCommunityIcons name="check-circle" size={20} color="#34C759" />
-            <Text style={styles.featureText}>Progress tracking</Text>
-          </View>
-          <View style={styles.featureItem}>
-            <MaterialCommunityIcons name="check-circle" size={20} color="#34C759" />
-            <Text style={styles.featureText}>AI conversation practice</Text>
-          </View>
-          <View style={styles.featureItem}>
-            <MaterialCommunityIcons name="check-circle" size={20} color="#34C759" />
-            <Text style={styles.featureText}>Pronunciation feedback</Text>
+        {/* Features Summary */}
+        <View className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 mb-8 border border-blue-100">
+          <Text className="text-lg font-semibold text-gray-900 mb-4">Your setup is complete! 🚀</Text>
+
+          <View className="space-y-3">
+            <View className="flex-row items-center">
+              <MaterialCommunityIcons name="check-circle" size={20} color="#10B981" className="mr-3" />
+              <Text className="text-gray-700">Personalized learning path</Text>
+            </View>
+
+            <View className="flex-row items-center">
+              <MaterialCommunityIcons name="check-circle" size={20} color="#10B981" className="mr-3" />
+              <Text className="text-gray-700">AI conversation practice</Text>
+            </View>
+
+            <View className="flex-row items-center">
+              <MaterialCommunityIcons name="check-circle" size={20} color="#10B981" className="mr-3" />
+              <Text className="text-gray-700">Pronunciation feedback</Text>
+            </View>
+
+            <View className="flex-row items-center">
+              <MaterialCommunityIcons name="check-circle" size={20} color="#10B981" className="mr-3" />
+              <Text className="text-gray-700">Progress tracking & analytics</Text>
+            </View>
           </View>
         </View>
 
-        {/* Buttons */}
-        <View style={styles.buttonsContainer}>
+        {/* Action Buttons */}
+        <View className="space-y-4 mb-6">
           <Button
-            title="Complete Setup"
+            title="Start Learning"
             onPress={handleComplete}
             variant="primary"
             size="large"
             loading={isLoading}
             disabled={isLoading}
-            style={styles.completeButton}
+            className="w-full rounded-2xl shadow-lg"
+            icon="rocket-launch"
+            iconPosition="right"
           />
 
-          <Button title="Back" onPress={() => router.back()} variant="outline" size="small" style={styles.backButton} />
+          <Button
+            title="Back"
+            onPress={() => router.back()}
+            variant="outline"
+            size="large"
+            className="w-full rounded-2xl"
+            icon="arrow-left"
+          />
         </View>
 
-        {/* Skip notifications */}
-        <TouchableOpacity style={styles.skipContainer} onPress={handleComplete} disabled={isLoading}>
-          <Text style={styles.skipText}>Skip notifications for now</Text>
+        {/* Skip option */}
+        <TouchableOpacity
+          className="items-center py-4"
+          onPress={handleComplete}
+          disabled={isLoading}
+          activeOpacity={0.7}
+        >
+          <Text className="text-gray-600 font-medium">Skip notifications for now</Text>
+          <Text className="text-xs text-gray-400 mt-1">You can enable them later in Settings</Text>
         </TouchableOpacity>
+
+        {/* Final note */}
+        <View className="mt-8 pt-6 border-t border-gray-200">
+          <View className="flex-row items-center justify-center">
+            <MaterialCommunityIcons name="star" size={16} color="#F59E0B" />
+            <Text className="text-sm text-gray-500 ml-2">Get ready for your English learning journey!</Text>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 40,
-    paddingBottom: 32,
-  },
-  progressContainer: {
-    marginBottom: 40,
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: "#E5E5EA",
-    borderRadius: 2,
-    overflow: "hidden",
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#007AFF",
-    borderRadius: 2,
-  },
-  progressText: {
-    fontSize: 12,
-    color: "#8E8E93",
-    textAlign: "center",
-  },
-  header: {
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#1A1A1A",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    lineHeight: 22,
-  },
-  mainOption: {
-    marginBottom: 32,
-  },
-  notificationToggle: {
-    backgroundColor: "#F8F9FA",
-    borderWidth: 1,
-    borderColor: "#E5E5EA",
-    borderRadius: 16,
-    padding: 20,
-  },
-  notificationToggleActive: {
-    backgroundColor: "#F0F7FF",
-    borderColor: "#007AFF",
-  },
-  toggleContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  toggleTexts: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  toggleTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    marginBottom: 4,
-  },
-  toggleDescription: {
-    fontSize: 14,
-    color: "#666",
-  },
-  toggleSwitch: {
-    width: 50,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "#E5E5EA",
-    padding: 2,
-    justifyContent: "center",
-  },
-  toggleSwitchActive: {
-    backgroundColor: "#007AFF",
-  },
-  toggleKnob: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#FFFFFF",
-    transform: [{ translateX: 0 }],
-  },
-  toggleKnobActive: {
-    transform: [{ translateX: 22 }],
-  },
-  dailyReminder: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    marginBottom: 16,
-  },
-  reminderToggle: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F8F9FA",
-    borderWidth: 1,
-    borderColor: "#E5E5EA",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  reminderToggleActive: {
-    backgroundColor: "#F0F7FF",
-    borderColor: "#007AFF",
-  },
-  reminderText: {
-    flex: 1,
-    fontSize: 16,
-    color: "#1A1A1A",
-    marginLeft: 12,
-  },
-  reminderSwitch: {
-    width: 40,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#E5E5EA",
-    padding: 2,
-    justifyContent: "center",
-  },
-  reminderSwitchActive: {
-    backgroundColor: "#007AFF",
-  },
-  reminderKnob: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: "#FFFFFF",
-    transform: [{ translateX: 0 }],
-  },
-  reminderKnobActive: {
-    transform: [{ translateX: 16 }],
-  },
-  timeSelection: {
-    marginTop: 8,
-  },
-  timeTitle: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 12,
-  },
-  timeOptions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  timeOption: {
-    backgroundColor: "#F8F9FA",
-    borderWidth: 1,
-    borderColor: "#E5E5EA",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  timeOptionSelected: {
-    backgroundColor: "#F0F7FF",
-    borderColor: "#007AFF",
-  },
-  timeOptionText: {
-    fontSize: 14,
-    color: "#666",
-  },
-  timeOptionTextSelected: {
-    color: "#007AFF",
-    fontWeight: "500",
-  },
-  features: {
-    backgroundColor: "#F8F9FA",
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 32,
-  },
-  featuresTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    marginBottom: 12,
-  },
-  featureItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  featureText: {
-    fontSize: 14,
-    color: "#666",
-    marginLeft: 8,
-  },
-  buttonsContainer: {
-    marginBottom: 24,
-  },
-  completeButton: {
-    marginBottom: 12,
-  },
-  backButton: {
-    alignSelf: "center",
-  },
-  skipContainer: {
-    alignItems: "center",
-  },
-  skipText: {
-    fontSize: 14,
-    color: "#666",
-    textDecorationLine: "underline",
-  },
-});

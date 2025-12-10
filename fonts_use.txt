@@ -1,0 +1,11 @@
+// Mi error fue usar tamaños muy pequeños. Corregido:
+<Text className="text-sm font-medium">❌ Muy pequeño (14px)</Text>
+<Text className="text-base font-medium">✅ Mejor (16px)</Text>
+
+<Text className="text-xs">❌ Demasiado pequeño (12px)</Text>
+<Text className="text-sm">✅ Aceptable para notas (14px)</Text>
+
+// Para el componente ChapterCard revisado:
+<Text className="text-base">✅ Level {selectedLevel}</Text>  // 16px
+<Text className="text-lg">✅ Descripción del capítulo</Text> // 18px  
+<Text className="text-2xl">✅ Título del capítulo</Text>     // 24px

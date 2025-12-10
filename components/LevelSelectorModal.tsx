@@ -31,8 +31,8 @@ const LevelSelectorModal: React.FC<LevelSelectorModalProps> = ({ visible, onClos
       <View className="flex-1 bg-black/50 justify-center items-center p-5">
         <View className="bg-white rounded-3xl w-full max-w-[400px] p-6 shadow-lg shadow-black/10">
           <View className="mb-6">
-            <Text className="text-2xl font-bold text-gray-900 text-center">Selecciona tu nivel</Text>
-            <Text className="text-sm text-gray-600 text-center mt-2">Las lecciones se adaptarán a este nivel</Text>
+            <Text className="text-3xl font-bold text-gray-900 text-center">Selecciona tu nivel</Text>
+            <Text className="text-xl text-gray-600 text-center mt-2">Las lecciones se adaptarán a este nivel</Text>
           </View>
 
           {levels.map((level) => {
@@ -58,11 +58,11 @@ const LevelSelectorModal: React.FC<LevelSelectorModalProps> = ({ visible, onClos
                     className="w-10 h-10 rounded-full justify-center items-center"
                     style={{ backgroundColor: level.color }}
                   >
-                    <Text className="text-white text-base font-bold">{level.id}</Text>
+                    <Text className="text-white text-2xl font-bold">{level.id}</Text>
                   </View>
                   <View className="ml-3">
-                    <Text className="text-base font-semibold text-gray-800">{level.label}</Text>
-                    <Text className="text-sm text-gray-600 mt-0.5">{level.desc}</Text>
+                    <Text className="text-xl font-semibold text-gray-800">{level.label}</Text>
+                    <Text className="text-xl text-gray-600 mt-0.5">{level.desc}</Text>
                   </View>
                 </View>
 
@@ -76,7 +76,7 @@ const LevelSelectorModal: React.FC<LevelSelectorModalProps> = ({ visible, onClos
             onPress={onClose}
             activeOpacity={0.7}
           >
-            <Text className="text-base font-semibold text-gray-600">Cancelar</Text>
+            <Text className="text-xl font-semibold text-gray-600">Cancelar</Text>
           </TouchableOpacity>
         </View>
       </View>

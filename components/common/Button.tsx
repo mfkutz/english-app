@@ -11,7 +11,9 @@ interface ButtonProps {
   loading?: boolean;
   style?: ViewStyle;
   icon?: string;
-  className?: string; // Añadimos soporte para className
+  iconPosition?: "left" | "right";
+  className?: string;
+  textClassName?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -23,7 +25,9 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   style,
   icon,
+  iconPosition = "left",
   className = "",
+  textClassName = "",
 }) => {
   // Clases base
   const baseClasses = "flex-row items-center justify-center rounded-xl";
@@ -32,19 +36,19 @@ export const Button: React.FC<ButtonProps> = ({
   const getVariantClasses = () => {
     switch (variant) {
       case "primary":
-        return "bg-blue-500";
+        return "bg-blue-500 active:bg-blue-600";
       case "secondary":
-        return "bg-gray-500";
+        return "bg-gray-500 active:bg-gray-600";
       case "outline":
-        return "bg-transparent border-2 border-blue-500";
+        return "bg-transparent border-2 border-blue-500 active:bg-blue-50";
       case "success":
-        return "bg-green-500";
+        return "bg-green-500 active:bg-green-600";
       case "danger":
-        return "bg-red-500";
+        return "bg-red-500 active:bg-red-600";
       case "disabled":
         return "bg-gray-300";
       default:
-        return "bg-blue-500";
+        return "bg-blue-500 active:bg-blue-600";
     }
   };
 
@@ -90,6 +94,25 @@ export const Button: React.FC<ButtonProps> = ({
     return "#FFFFFF";
   };
 
+  // Tamaño del icono
+  const getIconSize = () => {
+    switch (size) {
+      case "small":
+        return 16;
+      case "medium":
+        return 18;
+      case "large":
+        return 20;
+      default:
+        return 18;
+    }
+  };
+
+  // Espaciado del icono
+  const getIconSpacingClass = () => {
+    return iconPosition === "left" ? "mr-2" : "ml-2";
+  };
+
   // Combinar todas las clases
   const containerClasses = `
     ${baseClasses}
@@ -103,7 +126,32 @@ export const Button: React.FC<ButtonProps> = ({
     font-semibold
     ${getTextSizeClasses()}
     ${getTextColorClasses()}
+    ${textClassName}
   `;
+
+  const iconSize = getIconSize();
+  const iconColor = getIconColor();
+  const iconSpacingClass = getIconSpacingClass();
+
+  const renderContent = () => {
+    if (loading) {
+      return <ActivityIndicator color={iconColor} />;
+    }
+
+    const iconElement = icon && (
+      <MaterialCommunityIcons name={icon as any} size={iconSize} color={iconColor} className={iconSpacingClass} />
+    );
+
+    const textElement = <Text className={textClasses}>{title}</Text>;
+
+    return (
+      <>
+        {iconPosition === "left" && iconElement}
+        {textElement}
+        {iconPosition === "right" && iconElement}
+      </>
+    );
+  };
 
   return (
     <TouchableOpacity
@@ -113,21 +161,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       activeOpacity={0.7}
     >
-      {loading ? (
-        <ActivityIndicator color={getIconColor()} />
-      ) : (
-        <>
-          {icon && (
-            <MaterialCommunityIcons
-              name={icon as any}
-              size={size === "large" ? 20 : 16}
-              color={getIconColor()}
-              className="mr-2"
-            />
-          )}
-          <Text className={textClasses}>{title}</Text>
-        </>
-      )}
+      {renderContent()}
     </TouchableOpacity>
   );
 };

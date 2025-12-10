@@ -1,5 +1,4 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -9,135 +8,230 @@ interface Lesson {
   title: string;
   topics?: string[];
   progress?: {
-    completed: boolean;
+    completed: boolean | null;
   };
+  duration?: string;
+  icon?: string;
 }
 
 interface ChapterCardProps {
   chapter: {
     chapter: string;
+    chapterId: string;
     totalLessons: number;
     completedCount: number;
     lessons: Lesson[];
   };
   selectedLevel: string;
-  getChapterIcon: (chapterNumber: string) => string;
-  getChapterGradient: (chapterNumber: string) => string[];
-  calculateChapterTime: (chapter: any) => string;
 }
 
-const ChapterCard: React.FC<ChapterCardProps> = ({
-  chapter,
-  selectedLevel,
-  getChapterIcon,
-  getChapterGradient,
-  calculateChapterTime,
-}) => {
+const ChapterCard: React.FC<ChapterCardProps> = ({ chapter, selectedLevel }) => {
   const router = useRouter();
   const progressPercentage =
     chapter.totalLessons > 0 ? Math.round((chapter.completedCount / chapter.totalLessons) * 100) : 0;
-
-  const gradientColors = getChapterGradient(chapter.chapter);
-  const chapterIcon = getChapterIcon(chapter.chapter);
-  const estimatedTime = calculateChapterTime(chapter);
 
   const handleStartLesson = (lessonId: string) => {
     router.replace(`/lesson/${lessonId}`);
   };
 
+  const handleOpenChapter = () => {
+    console.log("Open chapter details:", chapter.chapterId);
+  };
+
+  // Paleta de colores ámbar para toda la app
+  const colors = {
+    primary: "#F59E0B", // Ámbar principal
+    light: "#FFFBEB", // Ámbar muy claro (fondo)
+    medium: "#FCD34D", // Ámbar medio (hover/estados)
+    dark: "#D97706", // Ámbar oscuro (textos/icons)
+    accent: "#92400E", // Ámbar muy oscuro (accent)
+    primaryLight: "#FEF3C7", // Ámbar claro
+  };
+
+  // Formatear el nombre del capítulo
+  const formatChapterName = (chapterStr: string) => {
+    const chapterNumber = chapterStr.replace("CHAPTER_", "");
+    return `Chapter ${chapterNumber}`;
+  };
+
+  // Obtener un título descriptivo basado en las lecciones
+  const getChapterDescription = () => {
+    if (chapter.lessons.length > 0) {
+      const firstLesson = chapter.lessons[0];
+      if (firstLesson.topics && firstLesson.topics.length > 0) {
+        return firstLesson.topics.join(" • ");
+      }
+      if (firstLesson.title) {
+        const keywords = firstLesson.title.split(" ").slice(0, 3).join(", ");
+        return keywords;
+      }
+    }
+    return "General vocabulary and phrases";
+  };
+
+  // Obtener icono para la lección (solo ámbar)
+  const getLessonIcon = (index: number, completed?: boolean | null) => {
+    if (completed) {
+      return {
+        name: "check-circle",
+        color: colors.primary,
+        iconSet: "MaterialCommunityIcons" as const,
+      };
+    }
+
+    // Diferentes iconos pero todos en tonos ámbar
+    const icons = [
+      { name: "book-open-variant", color: colors.dark, iconSet: "MaterialCommunityIcons" as const },
+      { name: "message-text", color: colors.dark, iconSet: "MaterialCommunityIcons" as const },
+      { name: "headphones", color: colors.dark, iconSet: "MaterialCommunityIcons" as const },
+      { name: "microphone", color: colors.dark, iconSet: "MaterialCommunityIcons" as const },
+      { name: "pencil", color: colors.dark, iconSet: "MaterialCommunityIcons" as const },
+      { name: "flashcards", color: colors.dark, iconSet: "MaterialCommunityIcons" as const },
+      { name: "translate", color: colors.dark, iconSet: "MaterialCommunityIcons" as const },
+      { name: "alphabetical", color: colors.dark, iconSet: "MaterialCommunityIcons" as const },
+    ];
+
+    return icons[index % icons.length];
+  };
+
   return (
-    <TouchableOpacity className="rounded-2xl overflow-hidden shadow-xl shadow-black/10" activeOpacity={0.95}>
-      {/* Fondo con gradiente */}
-      <LinearGradient colors={gradientColors} className="p-5" start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-        {/* Header del capítulo */}
-        <View className="flex-row items-center mb-3">
-          <View className="w-12 h-12 rounded-xl bg-white/20 justify-center items-center mr-3">
-            <MaterialCommunityIcons name={chapterIcon} size={24} color="#FFF" />
-          </View>
-          <View className="flex-1">
-            <Text className="text-xs text-white/80 font-medium mb-0.5">Level {selectedLevel}</Text>
-            <Text className="text-xl font-bold text-white">Chapter {chapter.chapter.replace("CHAPTER_", "")}</Text>
-          </View>
-          <View className="bg-white/20 px-3 py-1.5 rounded-full">
-            <Text className="text-white font-bold text-sm">{progressPercentage}%</Text>
-          </View>
-        </View>
-
-        {/* Descripción del capítulo */}
-        <Text className="text-sm text-white/90 mb-4 leading-5">
-          {chapter.lessons[0]?.topics?.join(", ") || "General vocabulary"}
-        </Text>
-
-        {/* Stats del capítulo */}
-        <View className="flex-row gap-4 mb-4">
-          <View className="flex-row items-center gap-1.5">
-            <MaterialCommunityIcons name="book-open" size={16} color="#FFF" />
-            <Text className="text-xs text-white/90 font-medium">
-              {chapter.completedCount}/{chapter.totalLessons} lessons
+    <TouchableOpacity
+      className="rounded-2xl overflow-hidden shadow-lg bg-white border border-amber-100  active:opacity-95"
+      activeOpacity={0.9}
+      onPress={handleOpenChapter}
+    >
+      {/* Header del capítulo con fondo ámbar claro */}
+      <View className="px-5 py-4" style={{ backgroundColor: colors.light }}>
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-row items-center">
+            <View className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: colors.primary }} />
+            <Text className="text-base font-medium" style={{ color: colors.dark }}>
+              Level {selectedLevel}
             </Text>
           </View>
-          <View className="flex-row items-center gap-1.5">
-            <MaterialCommunityIcons name="clock-outline" size={16} color="#FFF" />
-            <Text className="text-xs text-white/90 font-medium">{estimatedTime}</Text>
+
+          <View className="flex-row items-center">
+            <Text className="text-base font-medium mr-2" style={{ color: colors.dark }}>
+              {chapter.completedCount}/{chapter.totalLessons} done
+            </Text>
+            <View className="px-3 py-1 rounded-full" style={{ backgroundColor: colors.primaryLight }}>
+              <Text className="text-base font-bold" style={{ color: colors.accent }}>
+                {progressPercentage}%
+              </Text>
+            </View>
           </View>
         </View>
 
-        {/* Progress bar */}
-        <View className="h-1.5 bg-white/20 rounded-full mb-5 overflow-hidden">
-          <View className="h-full bg-white rounded-full" style={{ width: `${progressPercentage}%` }} />
-        </View>
+        {/* Título del capítulo */}
+        <Text className="text-2xl font-bold mb-1" style={{ color: colors.accent }}>
+          {formatChapterName(chapter.chapter)}
+        </Text>
 
-        {/* Lessons preview */}
-        <View className="gap-3">
-          {chapter.lessons.slice(0, 3).map((lesson, index) => {
-            const isCompleted = lesson.progress?.completed;
-            return (
-              <TouchableOpacity
-                key={lesson._id}
-                className="flex-row justify-between items-center bg-white/10 rounded-xl p-3 active:bg-white/15"
-                onPress={() => handleStartLesson(lesson._id)}
-                activeOpacity={0.7}
-              >
-                <View className="flex-row items-center flex-1 gap-3">
-                  <View
-                    className={`
-                      w-7 h-7 rounded-full justify-center items-center
-                      ${isCompleted ? "bg-green-500" : "bg-white/20"}
-                    `}
-                  >
-                    <Text className="text-xs font-bold text-white">{index + 1}</Text>
-                  </View>
-                  <Text
-                    className={`
-                      text-sm font-medium text-white flex-1
-                      ${isCompleted ? "opacity-80" : ""}
-                    `}
-                    numberOfLines={1}
-                  >
-                    {lesson.title}
+        {/* Descripción temática del capítulo */}
+        <Text className="text-base mb-3" style={{ color: colors.dark }}>
+          {getChapterDescription()}
+        </Text>
+
+        {/* Progress bar ámbar */}
+        <View className="mt-2">
+          <View className="h-2 bg-white rounded-full overflow-hidden border border-amber-200">
+            <View
+              className="h-full rounded-full"
+              style={{
+                width: `${progressPercentage}%`,
+                backgroundColor: colors.primary,
+              }}
+            />
+          </View>
+        </View>
+      </View>
+
+      {/* Lista de lecciones */}
+      <View className="px-4 py-2 bg-white">
+        <Text className="text-base font-medium mb-3 px-1" style={{ color: colors.dark }}>
+          Lessons in this chapter:
+        </Text>
+
+        {chapter.lessons.slice(0, 4).map((lesson, index) => {
+          const isCompleted = lesson.progress?.completed;
+          const icon = getLessonIcon(index, isCompleted);
+
+          return (
+            <TouchableOpacity
+              key={lesson._id}
+              className="flex-row items-center py-3 border-t border-amber-50 first:border-t-0"
+              onPress={() => handleStartLesson(lesson._id)}
+              activeOpacity={0.7}
+            >
+              {/* Número e icono de la lección */}
+              <View className="flex-row items-center mr-3">
+                <View
+                  className="w-8 h-8 rounded-lg justify-center items-center mr-3"
+                  style={{ backgroundColor: colors.primaryLight }}
+                >
+                  <Text className="text-base font-bold" style={{ color: colors.accent }}>
+                    {index + 1}
                   </Text>
                 </View>
-                <View className="ml-2">
-                  {isCompleted ? (
-                    <View className="w-6 h-6 rounded-full bg-green-500 justify-center items-center">
-                      <MaterialCommunityIcons name="check" size={14} color="#FFF" />
-                    </View>
+
+                <View
+                  className="w-10 h-10 rounded-xl justify-center items-center"
+                  style={{ backgroundColor: colors.light }}
+                >
+                  {icon.iconSet === "MaterialCommunityIcons" ? (
+                    <MaterialCommunityIcons name={icon.name as any} size={20} color={icon.color} />
                   ) : (
-                    <MaterialCommunityIcons name="play-circle" size={24} color="#FFF" className="opacity-90" />
+                    <Ionicons name={icon.name as any} size={20} color={icon.color} />
                   )}
                 </View>
-              </TouchableOpacity>
-            );
-          })}
+              </View>
 
-          {chapter.lessons.length > 3 && (
-            <TouchableOpacity className="flex-row items-center justify-center py-2 gap-1">
-              <Text className="text-xs text-white/80 font-medium">+{chapter.lessons.length - 3} more lessons</Text>
-              <Ionicons name="chevron-forward" size={16} color="#FFF" />
+              {/* Información de la lección */}
+              <View className="flex-1">
+                <Text className={`text-lg font-medium ${isCompleted ? "text-gray-500" : "text-gray-900"}`}>
+                  {lesson.title}
+                </Text>
+                {lesson.topics && lesson.topics.length > 0 && (
+                  <Text className="text-base mt-0.5" style={{ color: colors.dark }}>
+                    {lesson.topics.slice(0, 2).join(" • ")}
+                  </Text>
+                )}
+              </View>
+
+              {/* Estado/Acción */}
+              <View className="ml-2">
+                {isCompleted ? (
+                  <View
+                    className="w-8 h-8 rounded-full justify-center items-center"
+                    style={{ backgroundColor: colors.primaryLight }}
+                  >
+                    <MaterialCommunityIcons name="check" size={16} color={colors.primary} />
+                  </View>
+                ) : (
+                  <View className="flex-row items-center">
+                    <View
+                      className="w-8 h-8 rounded-full justify-center items-center"
+                      style={{ backgroundColor: colors.primary }}
+                    >
+                      <Ionicons name="play" size={14} color="#FFF" />
+                    </View>
+                  </View>
+                )}
+              </View>
             </TouchableOpacity>
-          )}
-        </View>
-      </LinearGradient>
+          );
+        })}
+
+        {/* Ver más lecciones si hay más de 4 */}
+        {chapter.lessons.length > 4 && (
+          <TouchableOpacity className="flex-row items-center justify-center py-3 border-t border-amber-100">
+            <Text className="text-sm font-medium mr-1" style={{ color: colors.primary }}>
+              +{chapter.lessons.length - 4} more lessons
+            </Text>
+            <Ionicons name="chevron-forward" size={16} style={{ color: colors.primary }} />
+          </TouchableOpacity>
+        )}
+      </View>
     </TouchableOpacity>
   );
 };
